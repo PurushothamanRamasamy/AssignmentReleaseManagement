@@ -1,0 +1,57 @@
+﻿@model IEnumerable<ReleaseManagementSystem.Models.Developer>
+
+@{
+    ViewBag.Title = "ViewDeveloperProjects";
+}
+
+<h2>ViewDeveloperProjects</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Project_Id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Project_Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Module_Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Dev_status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Test_Status)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Project_Id)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Project_Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Module_Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Dev_status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Test_Status)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+        </td>
+    </tr>
+}
+
+</table>
