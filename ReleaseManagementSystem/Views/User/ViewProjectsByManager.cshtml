@@ -1,0 +1,76 @@
+﻿@model IEnumerable<ReleaseManagementSystem.Models.Projects>
+
+@{
+    ViewBag.Title = "ViewProjectsByManager";
+}
+
+<h2>ViewProjectsByManager</h2>
+
+
+
+<div>
+    @Html.ActionLink("Add Project", "AddProjectsByManager")
+</div>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Project_Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Manager_Id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TeamLead_Id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Expected_Start_Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Expected_End_Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Actual_Start_Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Actual_End_Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.No_Of_Modules)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Project_Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Manager_Id)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TeamLead_Id)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Expected_Start_Date)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Expected_End_Date)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Actual_Start_Date)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Actual_End_Date)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.No_Of_Modules)
+        </td>
+        <td>
+            @Html.ActionLink("Assign to TeamLead", "ManagerAssignProjectToTeamLead", new { id=item.Project_Id }) 
+            
+        </td>
+    </tr>
+}
+
+</table>

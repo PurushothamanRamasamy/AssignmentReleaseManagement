@@ -52,12 +52,26 @@ namespace ReleaseManagementSystem.Controllers
             {
                 return RedirectToAction("ViewProjectsByTeamLead", new { empId = employee.Employee_Id });
             }
-
+            if (employee != null && employee.Role == "Tester")
+            {
+                return RedirectToAction("ViewTesterProjects", new { eMpId = employee.Employee_Id });
+            }
+            if (employee != null && employee.Role == "Manager")
+            {
+                return RedirectToAction("ViewProjectsByManager", new { eMpId = employee.Employee_Id });
+            }
+            
             else
             {
                 return View();
             }
             
+        }
+
+        public ActionResult ViewProjectsByManager(string eMpId)
+        {
+            List<Projects> projects = db.Projects.Where(project => project.Manager_Id == eMpId).ToList();
+            return View(projects);
         }
 
         public ActionResult AddProjectsByManager()
@@ -73,7 +87,7 @@ namespace ReleaseManagementSystem.Controllers
                 {
                     db.Projects.Add(projects);
                     db.SaveChanges();
-                    ViewBag.ProMsg = "Projects Added Successfully";
+                    return RedirectToAction("ViewProjectsByManager", new { eMpId = projects.Manager_Id });
                 }
                 catch (Exception ex)
                 {
@@ -85,10 +99,13 @@ namespace ReleaseManagementSystem.Controllers
             return View();
         }
 
-        public ActionResult ManagerAssignProjectToTeamLead()
+        public ActionResult ManagerAssignProjectToTeamLead(string id)
         {
-            
-            return View();
+            MangerAssignProject mangerAssignProject = new MangerAssignProject();
+            Projects projects = db.Projects.FirstOrDefault(project => project.Project_Id == id);
+            mangerAssignProject.Project_Id = projects.Project_Id;
+            mangerAssignProject.TeamLead_Id = projects.TeamLead_Id;
+            return View(mangerAssignProject);
         }
         [HttpPost]
         public ActionResult ManagerAssignProjectToTeamLead(MangerAssignProject mangerAssignProject)
@@ -99,7 +116,7 @@ namespace ReleaseManagementSystem.Controllers
                 Projects assignProject = db.Projects.FirstOrDefault(pro => pro.Project_Id == mangerAssignProject.Project_Id);
                 assignProject.TeamLead_Id = mangerAssignProject.TeamLead_Id;
                 db.SaveChanges();
-                ViewBag.AssignMessage = "Project Assigned";
+                return RedirectToAction("ViewProjectsByManager", new { eMpId = assignProject.Manager_Id });
             }
             catch (Exception ex)
             {
@@ -159,7 +176,7 @@ namespace ReleaseManagementSystem.Controllers
                     projectModules.Assigned_Tester_Id = addModule.Assign_Tester;
                     db.ProjectModules.Add(projectModules);
                     db.SaveChanges();
-                    ViewBag.assMod = "Module assigned";
+                    return RedirectToAction("ViewModulesByTeamLead");
                 }
                 catch (Exception ex)
                 {
@@ -167,6 +184,129 @@ namespace ReleaseManagementSystem.Controllers
                     ViewBag.assMod = ex.Message;
                 }
             }
+            return View();
+        }
+        public ActionResult ViewModulesByTeamLead()
+        {
+            List<ViewModulesbyTeamLeader> myModules = new List<ViewModulesbyTeamLeader>();
+            List<ProjectModules> modules = db.ProjectModules.ToList();
+
+            foreach (var item in modules)
+            {
+                ViewModulesbyTeamLeader viewModulesbyTeamLeader = new ViewModulesbyTeamLeader();
+                viewModulesbyTeamLeader.ProjectId = item.ProjectId;
+                viewModulesbyTeamLeader.Module_Name = item.Module_Name;
+                viewModulesbyTeamLeader.Assigned_Dev_Id = item.Assigned_Dev_Id;
+                viewModulesbyTeamLeader.Assigned_Tester_Id = item.Assigned_Tester_Id;
+                viewModulesbyTeamLeader.Status_Dev = item.Status_Dev;
+                viewModulesbyTeamLeader.Status_Tester = item.Status_Tester;
+                myModules.Add(viewModulesbyTeamLeader);
+            }
+
+            return View(myModules);
+        }
+        public ActionResult ApproveModulesByTeamLead(string moduleId)
+        {
+            ProjectModules mymodules = db.ProjectModules.FirstOrDefault(pro => pro.Module_Name == moduleId);
+
+            ApproveStatus approve = new ApproveStatus();
+            if (mymodules != null)
+            {
+                approve.Project_ID = mymodules.ProjectId;
+                approve.ModuleName = mymodules.Module_Name;
+                approve.Status_Dev = mymodules.Status_Dev;
+                approve.Status_Tester = mymodules.Status_Tester;
+            }
+            return View(approve);
+        }
+        [HttpPost]
+        public ActionResult ApproveModulesByTeamLead(ApproveStatus approveStatus)
+        {
+            if (approveStatus != null)
+            {
+                try
+                {
+                    ProjectModules project = db.ProjectModules.FirstOrDefault(projec => projec.Module_Name == approveStatus.ModuleName && projec.ProjectId == approveStatus.Project_ID);
+
+                    /*project.ProjectId = approveStatus.Project_ID;
+
+                    project.Module_Name = approveStatus.ModuleName;
+                    project.Status_Dev = approveStatus.Status_Dev;
+                    project.Status_Tester = approveStatus.Status_Tester;*/
+                    project.Approve_Status = !approveStatus.Approve_Status;
+
+                    //db.ProjectModules.Add(project);
+                    db.SaveChanges();
+                    return RedirectToAction("ViewModulesByTeamLead");
+                    //ViewBag.Message="Approved";
+                }
+                catch (Exception ex)
+                {
+
+                    ViewBag.AssignedMod = ex.Message;
+                }
+            }
+
+            return View();
+        }
+
+
+        public ActionResult ViewTesterProjects(string eMpId)
+        {
+
+            List<Tester> testers = new List<Tester>();
+            List<ProjectModules> modules = db.ProjectModules.Where(mod => mod.Assigned_Tester_Id == eMpId).ToList<ProjectModules>();
+            foreach (var item in modules)
+            {
+                Tester tester = new Tester();
+                Projects project = db.Projects.FirstOrDefault(pro => pro.Project_Id == item.ProjectId);
+                tester.Project_Id = item.ProjectId;
+                tester.Module_Name = item.Module_Name;
+                tester.Assign_Developer = item.Assigned_Dev_Id;
+                tester.Dev_status = item.Status_Dev;
+                testers.Add(tester);
+
+            }
+            return View(testers);
+        }
+
+
+        public ActionResult UpdateTesterStatus(string moduleId, string projectID)
+        {
+            ProjectModules mymodules = db.ProjectModules.FirstOrDefault(pro => pro.ProjectId == projectID && pro.Module_Name == moduleId);
+
+            UpdateTesterStatus testerStatus = new UpdateTesterStatus();
+            if (mymodules != null)
+            {
+                testerStatus.Project_ID = mymodules.ProjectId;
+                testerStatus.ModuleName = mymodules.Module_Name;
+                testerStatus.Assign_Developer = mymodules.Assigned_Dev_Id;
+                testerStatus.Status_Dev = mymodules.Status_Dev;
+            }
+            return View(testerStatus);
+        }
+        [HttpPost]
+        public ActionResult UpdateTesterStatus(UpdateTesterStatus update)
+        {
+            if (update != null)
+            {
+                try
+                {
+                    ProjectModules project = db.ProjectModules.FirstOrDefault(projec => projec.Module_Name == update.ModuleName && projec.ProjectId == update.Project_ID);
+                    project.Status_Tester = !update.Update_Tester_Status;
+
+                    //db.ProjectModules.Add(project);
+                    db.SaveChanges();
+                    return RedirectToAction("ViewTesterProjects", new { eMpId = project.Assigned_Tester_Id });
+                    //ViewBag.Message="Approved";
+                }
+                catch (Exception ex)
+                {
+
+                    ViewBag.AssignedMod = ex.Message;
+                }
+            }
+
             return View();
         }
 
@@ -183,9 +323,10 @@ namespace ReleaseManagementSystem.Controllers
                 developer.Project_Id = item.ProjectId;
                 developer.Module_Name = item.Module_Name;
                 developer.Dev_status = item.Status_Dev;
+                developer.ActualStartDate = project.Actual_Start_Date;
+                developer.ActualEndDate = project.Actual_End_Date;
                 developer.Project_Name = project.Project_Name;
                 developer.Test_Status = item.Status_Tester;
-                developer.Bugs_Id.AddRange(bugs.Select(bugid => bugid.Bug_Id).ToList());
                 developer.Bug_Description.AddRange(bugs.Select(bugdes => bugdes.Bug_Description).ToList());
                 developer.Bug_status.AddRange(bugs.Select(bugsts => bugsts.Bug_Status).ToList());
 
@@ -193,6 +334,39 @@ namespace ReleaseManagementSystem.Controllers
 
             }
             return View(developers);
+        }
+
+        public ActionResult UpdateDevloperStatus(string proId,string modName)
+        {
+            ProjectModules projectModules = db.ProjectModules.FirstOrDefault(mod => mod.ProjectId == proId && mod.Module_Name == modName);
+
+            
+            return View(projectModules);
+        }
+        [HttpPost]
+        public ActionResult UpdateDevloperStatus(ProjectModules getprojectModules)
+        {
+            try
+            {
+                ProjectModules projectModules = db.ProjectModules.FirstOrDefault(mod => mod.ProjectId == getprojectModules.ProjectId && mod.Module_Name == getprojectModules.Module_Name);
+                projectModules.Status_Dev = true;
+                db.SaveChanges();
+                //ViewBag.sts = getprojectModules.Status_Dev+" "+ getprojectModules.Module_Name+" "+getprojectModules.ProjectId;
+                return RedirectToAction("ViewDeveloperProjects", new { Emp_Id = getprojectModules.Assigned_Dev_Id });
+
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+                
+            }
+
+            
+        }
+        public ActionResult RaiseBug()
+        {
+            return View();
         }
     }
 }

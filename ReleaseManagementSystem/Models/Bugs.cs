@@ -7,12 +7,18 @@ using System.Web;
 
 namespace ReleaseManagementSystem.Models
 {
+    public enum Status
+
+    {
+        NotCompleted= 1,
+        Completed
+    }
     public class Bugs
     {
         public string Module_Name { get; set; }
              
         [Key]
-        public string Bug_Id { get; set; }
+        public string Project_Id { get; set; }
         public bool Bug_Status { get; internal set; }
 
         public string Bug_Description { get; internal set; }
