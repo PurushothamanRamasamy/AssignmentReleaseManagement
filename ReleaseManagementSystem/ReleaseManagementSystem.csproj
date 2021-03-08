@@ -225,7 +225,29 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202103071709492_InitialCreate.cs" />
+    <Compile Include="Migrations\202103071709492_InitialCreate.designer.cs">
+      <DependentUpon>202103071709492_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202103081254315_pro.cs" />
+    <Compile Include="Migrations\202103081254315_pro.designer.cs">
+      <DependentUpon>202103081254315_pro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202103081538281_proEnum.cs" />
+    <Compile Include="Migrations\202103081538281_proEnum.designer.cs">
+      <DependentUpon>202103081538281_proEnum.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202103081709089_addmig.cs" />
+    <Compile Include="Migrations\202103081709089_addmig.designer.cs">
+      <DependentUpon>202103081709089_addmig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202103081728237_update.cs" />
+    <Compile Include="Migrations\202103081728237_update.designer.cs">
+      <DependentUpon>202103081728237_update.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AddModule.cs" />
+    <Compile Include="Models\ApproveStatus.cs" />
     <Compile Include="Models\Bugs.cs" />
     <Compile Include="Models\Developer.cs" />
     <Compile Include="Models\EmployeeDetails.cs" />
@@ -233,6 +255,9 @@
     <Compile Include="Models\ProjectModules.cs" />
     <Compile Include="Models\Projects.cs" />
     <Compile Include="Models\ReleaseManagementContext.cs" />
+    <Compile Include="Models\Tester.cs" />
+    <Compile Include="Models\UpdateTesterStatus.cs" />
+    <Compile Include="Models\ViewModulesbyTeamLeader.cs" />
     <Compile Include="Models\ViewProjectbyTeamLeader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -247,6 +272,13 @@
     <Content Include="Scripts\jquery-3.0.0.min.map" />
     <Content Include="Views\User\ViewProjectsByTeamLead.cshtml" />
     <Content Include="Views\User\AssignModulesByTeamLead.cshtml" />
+    <Content Include="Views\User\UpdateDevloperStatus.cshtml" />
+    <Content Include="Views\User\RaiseBug.cshtml" />
+    <Content Include="Views\User\UpdateTesterStatus.cshtml" />
+    <Content Include="Views\User\ViewTesterProjects.cshtml" />
+    <Content Include="Views\User\ApproveModulesByTeamLead.cshtml" />
+    <Content Include="Views\User\ViewModulesByTeamLead.cshtml" />
+    <Content Include="Views\User\ViewProjectsByManager.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -262,6 +294,23 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202103071709492_InitialCreate.resx">
+      <DependentUpon>202103071709492_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202103081254315_pro.resx">
+      <DependentUpon>202103081254315_pro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202103081538281_proEnum.resx">
+      <DependentUpon>202103081538281_proEnum.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202103081709089_addmig.resx">
+      <DependentUpon>202103081709089_addmig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202103081728237_update.resx">
+      <DependentUpon>202103081728237_update.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
