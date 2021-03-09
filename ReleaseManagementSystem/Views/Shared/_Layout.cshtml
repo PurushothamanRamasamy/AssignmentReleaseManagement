@@ -3,14 +3,26 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title</title>
     <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <script src="~/Scripts/modernizr-2.8.3.js"></script>
 </head>
 <body>
-    
-    <div class="container body-content">
+    <ul class="nav justify-content-end navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+        <li class="nav-item text-light " style="padding:5px">
+            @ViewBag.UserDetails
+        </li>
+        
+        <li class="nav-item">
+            <div class="btn btn-light">
+                @Html.ActionLink("Logoff", "LogOff", new { htmlAttributes = new { @class = " btn " } })
+            </div>
+        </li>
+        
+        
+    </ul>
+    <div class="container body-content" style="margin-top:50px">
         @RenderBody()
         
     </div>

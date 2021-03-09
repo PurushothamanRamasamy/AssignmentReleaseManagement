@@ -8,8 +8,11 @@
 
 
 
-<div>
-    @Html.ActionLink("Add Project", "AddProjectsByManager")
+<div class="row" style="padding-bottom:10px">
+    <div class="col-10"></div>
+    <div class="col-2 btn btn-outline-danger btn-large text-light">
+        @Html.ActionLink("Add Project", "AddProjectsByManager", new { htmlAttributes = new { @style = "color:white" } })
+    </div>
 </div>
 <table class="table">
     <tr>

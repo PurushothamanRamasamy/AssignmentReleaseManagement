@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script src="~/Scripts/modernizr-2.8.3.js"></script>
+</head>
+<body>
+    <header style="background-color:royalblue;text-align:center">
+        <h2>Welcome to Release Management System</h2>
+    </header>
+    <nav class="navbar navbar-expand-sm bg-dark">
+
+        <!-- Links -->
+        <ul class="navbar-nav">
+            <li> @Html.ActionLink("Add Module", "AssignModulesByTeamLead", "User")</li>&nbsp;&nbsp;&nbsp;&nbsp;
+
+            <li>
+                @Html.ActionLink("Logout", "Login", "User")
+        </ul>
+
+    </nav>
+    @* <nav >
+            <div >
+                @Html.ActionLink("Logout","Login","User")
+            </div>
+        </nav>*@
+    <div>
+        @RenderBody()
+    </div>
+</body>
+</html>

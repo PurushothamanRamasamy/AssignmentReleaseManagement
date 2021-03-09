@@ -10,30 +10,41 @@ namespace ReleaseManagementSystem.Controllers
     public class UserController : Controller
     {
         // GET: User
+        public  ActionResult LogOff()
+        {
+            Session.Clear();
+            return RedirectToAction("Login");
+        }
+
         ReleaseManagementContext db = new ReleaseManagementContext();
         public ActionResult Register()
         {
-            return View();
+            EmployeeDetails employee = new EmployeeDetails();
+            return View(employee);
         }
         [HttpPost]
         public ActionResult Register(EmployeeDetails employee)
         {
-            if(employee!=null)
+            if (ModelState.IsValid)
             {
-                try
+                if (employee != null)
                 {
-                    db.EmployeeDetails.Add(employee);
-                    db.SaveChanges();
-                    ViewBag.Msg = "User Registered Successfully";
-                }
-                catch (Exception ex)
-                {
-                    ViewBag.Msg =ex.Message;
+                    try
+                    {
+                        db.EmployeeDetails.Add(employee);
+                        db.SaveChanges();
+                        ViewBag.Msg = "User Registered Successfully";
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Msg = ex.Message;
 
+                    }
                 }
             }
 
             return View();
+            
         }
 
         public ActionResult Login()
@@ -41,42 +52,65 @@ namespace ReleaseManagementSystem.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult Login(EmployeeDetails employeeLoginDetails)
+        public ActionResult Login(Login employeeLoginDetails)
         {
-            EmployeeDetails employee = db.EmployeeDetails.FirstOrDefault(emp => emp.UserName == employeeLoginDetails.UserName && emp.Password == employeeLoginDetails.Password);
-            if (employee != null && employee.Role == "Developer")
+            if (ModelState.IsValid)
             {
-                return RedirectToAction("ViewDeveloperProjects", new { Emp_Id = employee.Employee_Id });
+                EmployeeDetails employee = db.EmployeeDetails.FirstOrDefault(emp => emp.UserName == employeeLoginDetails.UserName && emp.Password == employeeLoginDetails.Password);
+                if (employee != null && employee.Role == "Developer")
+                {
+                    ViewBag.UserDetails =":"+ employee.UserName + " Role :"+employee.Role;
+                    Session["EmpId"] = employee.Employee_Id;
+                    return RedirectToAction("ViewDeveloperProjects", new { Emp_Id = employee.Employee_Id });
+                }
+                if (employee != null && employee.Role == "TeamLead")
+                {
+                    ViewBag.UserDetails = employee.UserName + " Role :" + employee.Role;
+                    Session["EmpId"] = employee.Employee_Id;
+                    return RedirectToAction("ViewProjectsByTeamLead", new { empId = employee.Employee_Id });
+                }
+                if (employee != null && employee.Role == "Tester")
+                {
+                    ViewBag.UserDetails = employee.UserName + " Role :" + employee.Role;
+                    Session["EmpId"] = employee.Employee_Id;
+                    return RedirectToAction("ViewTesterProjects", new { eMpId = employee.Employee_Id });
+                }
+                if (employee != null && employee.Role == "Manager")
+                {
+                    ViewBag.UserDetails = employee.UserName + " Role :" + employee.Role;
+                    Session["EmpId"] = employee.Employee_Id;
+                    return RedirectToAction("ViewProjectsByManager", new { eMpId = employee.Employee_Id });
+                }
             }
-            if (employee != null && employee.Role == "TeamLead")
-            {
-                return RedirectToAction("ViewProjectsByTeamLead", new { empId = employee.Employee_Id });
-            }
-            if (employee != null && employee.Role == "Tester")
-            {
-                return RedirectToAction("ViewTesterProjects", new { eMpId = employee.Employee_Id });
-            }
-            if (employee != null && employee.Role == "Manager")
-            {
-                return RedirectToAction("ViewProjectsByManager", new { eMpId = employee.Employee_Id });
-            }
-            
-            else
-            {
-                return View();
-            }
-            
+            ViewBag.LoginMesssage = "Invalid user name or password";
+            return View();
+
+
         }
 
         public ActionResult ViewProjectsByManager(string eMpId)
         {
-            List<Projects> projects = db.Projects.Where(project => project.Manager_Id == eMpId).ToList();
-            return View(projects);
+            if(Session["EmpId"]!=null)
+            {
+                List<Projects> projects = db.Projects.Where(project => project.Manager_Id == eMpId).ToList();
+                return View(projects);
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
         }
 
         public ActionResult AddProjectsByManager()
         {
-            return View();
+            if (Session["EmpId"] != null)
+            {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
         }
         [HttpPost]
         public ActionResult AddProjectsByManager(Projects projects)
@@ -101,29 +135,44 @@ namespace ReleaseManagementSystem.Controllers
 
         public ActionResult ManagerAssignProjectToTeamLead(string id)
         {
-            MangerAssignProject mangerAssignProject = new MangerAssignProject();
-            Projects projects = db.Projects.FirstOrDefault(project => project.Project_Id == id);
-            mangerAssignProject.Project_Id = projects.Project_Id;
-            mangerAssignProject.TeamLead_Id = projects.TeamLead_Id;
-            return View(mangerAssignProject);
+            if (Session["EmpId"] != null)
+            {
+                MangerAssignProject mangerAssignProject = new MangerAssignProject();
+                Projects projects = db.Projects.FirstOrDefault(project => project.Project_Id == id);
+                mangerAssignProject.Project_Id = projects.Project_Id;
+                mangerAssignProject.TeamLead_Id = projects.TeamLead_Id;
+                return View(mangerAssignProject);
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
         }
         [HttpPost]
         public ActionResult ManagerAssignProjectToTeamLead(MangerAssignProject mangerAssignProject)
         {
 
-            try
+            if (Session["EmpId"]!=null)
             {
-                Projects assignProject = db.Projects.FirstOrDefault(pro => pro.Project_Id == mangerAssignProject.Project_Id);
-                assignProject.TeamLead_Id = mangerAssignProject.TeamLead_Id;
-                db.SaveChanges();
-                return RedirectToAction("ViewProjectsByManager", new { eMpId = assignProject.Manager_Id });
-            }
-            catch (Exception ex)
-            {
+                try
+                {
+                    Projects assignProject = db.Projects.FirstOrDefault(pro => pro.Project_Id == mangerAssignProject.Project_Id);
+                    assignProject.TeamLead_Id = mangerAssignProject.TeamLead_Id;
+                    db.SaveChanges();
+                    return RedirectToAction("ViewProjectsByManager", new { eMpId = assignProject.Manager_Id });
+                }
+                catch (Exception ex)
+                {
 
-                ViewBag.AssignMessage = ex.Message;
+                    ViewBag.AssignMessage = ex.Message;
+                }
+                return View();
+
             }
-            return View();
+            else
+            {
+                return RedirectToAction("Login");
+            }
         }
 
         public ActionResult ViewProjectsByTeamLead(string empId)
@@ -370,3 +419,11 @@ namespace ReleaseManagementSystem.Controllers
         }
     }
 }
+
+/*
+ public JsonResult IsUserExists(string UserId)
+        {
+            return IsExist(UserId) ? Json(true, JsonRequestBehavior.AllowGet) : Json(false, JsonRequestBehavior.AllowGet);
+        }
+[RemoteAttribute("IsUserExists","Customer",ErrorMessage ="User already exists! Choose some other name")]
+ */
